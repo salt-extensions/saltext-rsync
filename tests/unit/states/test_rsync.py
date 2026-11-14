@@ -1,11 +1,13 @@
 """
-    :codeauthor: Gareth J. Greenaway <gareth@saltstack.com>
+:codeauthor: Gareth J. Greenaway <gareth@saltstack.com>
 """
+
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 
-import salt.states.rsync as rsync
-from tests.support.mock import MagicMock, patch
+from saltext.rsync.states import rsync
 
 
 @pytest.fixture

@@ -14,7 +14,8 @@ import tempfile
 
 import salt.utils.files
 import salt.utils.path
-from salt.exceptions import CommandExecutionError, SaltInvocationError
+from salt.exceptions import CommandExecutionError
+from salt.exceptions import SaltInvocationError
 
 log = logging.getLogger(__name__)
 
@@ -29,8 +30,7 @@ def __virtual__():
         return __virtualname__
     return (
         False,
-        "The rsync execution module cannot be loaded: "
-        "the rsync binary is not in the path.",
+        "The rsync execution module cannot be loaded: the rsync binary is not in the path.",
     )
 
 
@@ -193,9 +193,7 @@ def rsync(
             else:
                 raise CommandExecutionError(f"{src} does not exist")
 
-    option = _check(
-        delete, force, update, passwordfile, exclude, excludefrom, dryrun, rsh
-    )
+    option = _check(delete, force, update, passwordfile, exclude, excludefrom, dryrun, rsh)
 
     if additional_opts and isinstance(additional_opts, list):
         option = option + additional_opts
@@ -205,7 +203,7 @@ def rsync(
     try:
         return __salt__["cmd.run_all"](cmd, python_shell=False)
     except OSError as exc:
-        raise CommandExecutionError(exc.strerror)
+        raise CommandExecutionError(exc.strerror) from exc
     finally:
         if tmp_src:
             __salt__["file.remove"](tmp_src)
@@ -229,11 +227,11 @@ def version():
     try:
         out = __salt__["cmd.run_stdout"](["rsync", "--version"], python_shell=False)
     except OSError as exc:
-        raise CommandExecutionError(exc.strerror)
+        raise CommandExecutionError(exc.strerror) from exc
     try:
         return out.split("\n")[0].split()[2]
-    except IndexError:
-        raise CommandExecutionError("Unable to determine rsync version")
+    except IndexError as exc:
+        raise CommandExecutionError("Unable to determine rsync version") from exc
 
 
 def config(conf_path="/etc/rsyncd.conf"):
@@ -261,14 +259,11 @@ def config(conf_path="/etc/rsyncd.conf"):
                 ret += salt.utils.stringutils.to_unicode(line)
     except OSError as exc:
         if exc.errno == errno.ENOENT:
-            raise CommandExecutionError(f"{conf_path} does not exist")
-        elif exc.errno == errno.EACCES:
-            raise CommandExecutionError(f"Unable to read {conf_path}, access denied")
-        elif exc.errno == errno.EISDIR:
-            raise CommandExecutionError(
-                f"Unable to read {conf_path}, path is a directory"
-            )
-        else:
-            raise CommandExecutionError(f"Error {exc.errno}: {exc.strerror}")
+            raise CommandExecutionError(f"{conf_path} does not exist") from exc
+        if exc.errno == errno.EACCES:
+            raise CommandExecutionError(f"Unable to read {conf_path}, access denied") from exc
+        if exc.errno == errno.EISDIR:
+            raise CommandExecutionError(f"Unable to read {conf_path}, path is a directory") from exc
+        raise CommandExecutionError(f"Error {exc.errno}: {exc.strerror}") from exc
     else:
         return ret

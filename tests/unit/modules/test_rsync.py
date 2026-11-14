@@ -1,14 +1,17 @@
 """
-    :codeauthor: Jayesh Kariya <jayeshk@saltstack.com>
+:codeauthor: Jayesh Kariya <jayeshk@saltstack.com>
 
-    Test cases for salt.modules.rsyn
+Test cases for salt.modules.rsyn
 """
 
-import pytest
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
-import salt.modules.rsync as rsync
-from salt.exceptions import CommandExecutionError, SaltInvocationError
-from tests.support.mock import MagicMock, patch
+import pytest
+from salt.exceptions import CommandExecutionError
+from salt.exceptions import SaltInvocationError
+
+from saltext.rsync.modules import rsync
 
 
 @pytest.fixture

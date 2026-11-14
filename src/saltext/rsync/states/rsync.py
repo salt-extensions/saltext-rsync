@@ -26,7 +26,6 @@ State to synchronize files and directories with rsync.
 
 """
 
-
 import logging
 import os
 
@@ -52,11 +51,7 @@ def _get_summary(rsync_out):
     """
 
     return "- " + "\n- ".join(
-        [
-            elm
-            for elm in rsync_out.split("\n\n")[-1].replace("  ", "\n").split("\n")
-            if elm
-        ]
+        [elm for elm in rsync_out.split("\n\n")[-1].replace("  ", "\n").split("\n") if elm]
     )
 
 
@@ -64,8 +59,8 @@ def _get_changes(rsync_out):
     """
     Get changes from the rsync successful output.
     """
-    copied = list()
-    deleted = list()
+    copied = []
+    deleted = []
 
     for line in rsync_out.split("\n\n")[0].split("\n")[1:]:
         if line.startswith("deleting "):
