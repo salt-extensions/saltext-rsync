@@ -17,13 +17,12 @@ max_salt_version: '3008'
 no_saltext_namespace: false
 os_support:
   - Linux
-  - macOS
   - Windows
 package_name: rsync
 project_name: rsync
 python_requires: '3.10'
 relax_pylint: true
-salt_version: '3006'
+salt_version: '3008'
 source_url: https://github.com/salt-extensions/saltext-rsync
 ssh_fixtures: false
 summary: Salt Extension for interacting with Rsync
